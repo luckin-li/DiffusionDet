@@ -1,0 +1,36 @@
+_BASE_: "Base-DiffusionDet.yaml"
+MODEL:
+  WEIGHTS: "models/swin_base_patch4_window7_224_22k.pkl"
+  BACKBONE:
+    NAME: "build_swintransformer_fpn_backbone"
+  SWIN:
+    SIZE: B-22k
+  FPN:
+    IN_FEATURES: ["swin0", "swin1", "swin2", "swin3" ]
+  DiffusionDet:
+    NUM_PROPOSALS: 500
+    #修改推理框的数量
+    TEST_NUM_PROPOSALS: 2000
+    NUM_CLASSES: 43
+    #损失函数权重，确保与论文保持一致
+    CLASS_WEIGHT: 2.0
+    GIOU_WEIGHT: 2.0
+    L1_WEIGHT: 5.0
+#    # Augmentation branch (启用示例)新增参数
+#    AUG_ON: False
+#    AUG_PROB: 1.0
+#    AUG_LOSS_CE_WEIGHT: 1.0
+#    AUG_NO_GRAD_BACKBONE: True
+DATASETS:
+  TRAIN: ("train",)
+  TEST:  ("test",)
+SOLVER:
+  STEPS: (350000, 420000)
+  MAX_ITER: 450000
+#  BASE_LR: 1e-4
+INPUT:
+#  MIN_SIZE_TRAIN: (224,)   # 固定训练短边为 224
+#  MIN_SIZE_TEST: 224       # 测试/推理短边为 224
+  CROP:
+    ENABLED: False        # 关闭随机裁剪，保证输出 224x224
+  FORMAT: "RGB"
